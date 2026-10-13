@@ -16,7 +16,7 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-	<!-- ====================================================================
+				<!-- ====================================================================
 				TAXONOMIC SCOPE & IDENTITY ARCHITECTURE
 				====================================================================
 				1. Granularity Rule: 
@@ -62,8 +62,6 @@
 							<xs:element name="regionName" type="xs:string" placeholder="e.g., Pacific Northwest"/>
 							<xs:element name="country" type="xs:string"/>
 							<xs:element name="zipOrPostalCode" type="xs:string" minOccurs="0"/>
-							<xs:element name="usdaHardinessZoneMin" type="xs:string"/>
-							<xs:element name="usdaHardinessZoneMax" type="xs:string"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
@@ -75,6 +73,18 @@
 							<xs:element name="moistureCode" type="MoistureCodeType"/>
 							<xs:element name="notes" type="xs:string" minOccurs="0"/>
 						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="ClimateTolerance">
+					<xs:complexType>
+						<xs:choice>
+							<xs:element name="ZoneProfile" type="ZoneProfileType"/>
+							<xs:element name="TemperatureLimits" type="TemperatureLimitsType"/>
+							<xs:sequence>
+								<xs:element name="ZoneProfile" type="ZoneProfileType"/>
+								<xs:element name="TemperatureLimits" type="TemperatureLimitsType"/>
+							</xs:sequence>
+						</xs:choice>
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
@@ -125,4 +135,16 @@
 			<xs:enumeration value="Cultivar"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:complexType name="ZoneProfileType">
+		<xs:sequence>
+			<xs:element name="system" type="xs:string"/>
+			<xs:element name="value" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TemperatureLimitsType">
+		<xs:sequence>
+			<xs:element name="minCelsius" type="xs:decimal"/>
+			<xs:element name="maxCelsius" type="xs:decimal" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
 </xs:schema>
