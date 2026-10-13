@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://w3.org">
+	<!-- Root Element -->
+	<xs:element name="ScopedPlantProfile">
+		<xs:complexType>
+			<xs:sequence>
+				<!-- 1. PROVENANCE (The Author Fields) -->
+				<xs:element name="Metadata">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="profileId" type="xs:string"/>
+							<xs:element name="authorName" type="xs:string"/>
+							<xs:element name="organization" type="xs:string" minOccurs="0"/>
+							<xs:element name="dateCreated" type="xs:date"/>
+							<xs:element name="version" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+	<!-- ====================================================================
+				TAXONOMIC SCOPE & IDENTITY ARCHITECTURE
+				====================================================================
+				1. Granularity Rule: 
+					 Observations target the Genus level or lower. Family-level scopes 
+					 are not supported.
+				
+				2. Botanical Nomenclature & Authority Citations:
+					 To prevent ambiguity, homonyms, and historical misclassifications, 
+					 plant identity is decomposed into precise binomial/trinomial 
+					 components alongside the botanical author citation. 
+				
+				3. External Registry Mapping (WFO / IPNI / Darwin Core Interop):
+					 Rather than duplicating global phylogenetic databases, this schema acts 
+					 as a consumer wrapper. The optional "taxonId" and "authorityRegistry" 
+					 elements allow files to embed a globally unique identifier (such as a 
+					 World Flora Online ID or IPNI key). Applications use this ID to resolve 
+					 synonyms, verify taxonomic updates, and map care profiles without 
+					 storing full family trees locally.
+				==================================================================== -->
+				<xs:element name="TaxonomicScope">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="targetRank" type="TaxonRankType"/>
+							<!-- External Registry Link (e.g., World Flora Online ID) -->
+							<xs:element name="taxonId" type="xs:string" minOccurs="0"/>
+							<xs:element name="authorityRegistry" type="xs:string" minOccurs="0"/>
+							<!-- e.g., "WFO", "IPNI" -->
+							<!-- Granular Botanical Components -->
+							<xs:element name="genus" type="xs:string"/>
+							<xs:element name="specificEpithet" type="xs:string" minOccurs="0"/>
+							<xs:element name="infraspecificRank" type="InfraspecificRankType" minOccurs="0"/>
+							<xs:element name="infraspecificEpithet" type="xs:string" minOccurs="0"/>
+							<xs:element name="cultivarName" type="xs:string" minOccurs="0"/>
+							<!-- Botanical Authority Citation -->
+							<xs:element name="authorCitation" type="xs:string" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<!-- 3. GEOGRAPHIC CONTEXT (Where these conditions apply) -->
+				<xs:element name="GeographicContext">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="regionName" type="xs:string" placeholder="e.g., Pacific Northwest"/>
+							<xs:element name="country" type="xs:string"/>
+							<xs:element name="zipOrPostalCode" type="xs:string" minOccurs="0"/>
+							<xs:element name="usdaHardinessZoneMin" type="xs:string"/>
+							<xs:element name="usdaHardinessZoneMax" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<!-- 4. REGION-SPECIFIC CARE & TOLERANCES -->
+				<xs:element name="LocalObservations">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="sunlightCode" type="SunlightCodeType" maxOccurs="4"/>
+							<xs:element name="moistureCode" type="MoistureCodeType"/>
+							<xs:element name="notes" type="xs:string" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="InfraspecificRankType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="subsp."/>
+			<xs:enumeration value="var."/>
+			<xs:enumeration value="f."/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- LOOKUP DICTIONARY: Sunlight Codes -->
+	<xs:simpleType name="SunlightCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="FSUN"/>
+			<!-- Full Sun -->
+			<xs:enumeration value="PSUN"/>
+			<!-- Partial Sun -->
+			<xs:enumeration value="PSHD"/>
+			<!-- Partial Shade -->
+			<xs:enumeration value="FSHD"/>
+			<!-- Full Shade -->
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- LOOKUP DICTIONARY: Moisture/Soil Codes -->
+	<xs:simpleType name="MoistureCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="XERI"/>
+			<!-- Xeric / Dry Only -->
+			<xs:enumeration value="WDRN"/>
+			<!-- Well-Drained -->
+			<xs:enumeration value="MOIS"/>
+			<!-- Consistently Moist -->
+			<xs:enumeration value="SOGG"/>
+			<!-- Soggy / Wet Soil -->
+			<xs:enumeration value="BOGG"/>
+			<!-- Standing Water / Bog -->
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Custom Types for Restricting Inputs -->
+	<xs:simpleType name="TaxonRankType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Family"/>
+			<xs:enumeration value="Genus"/>
+			<xs:enumeration value="Species"/>
+			<xs:enumeration value="Subspecies"/>
+			<xs:enumeration value="Cultivar"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
